@@ -1,0 +1,115 @@
+module civs.Civs where
+
+import Data.List
+
+-------------------------------------------------
+-- From Java
+-------------------------------------------------
+
+data ArrayList e = native java.util.ArrayList where
+  native new :: () -> STMutable s (ArrayList e)              
+  native add :: Mutable s (ArrayList e) -> e -> ST s Bool
+
+data Language = pure native com.github.langgen.Language where
+  native new :: Mutable s (ArrayList String) -> ST s Language
+  native addSample :: Language -> String -> ST s ()
+  native name :: Language -> ST s String
+
+data Random = pure native java.util.Random
+
+data SamplesBasedLanguageFactory = pure native com.github.langgen.SamplesBasedLanguageFactory where
+  pure native getRandomLanguage com.github.langgen.SamplesBasedLanguageFactory.getRandomLanguage :: Random -> Language
+                                                                                             | () -> Language  
+data IncorrectFileException = pure native com.github.lands.IncorrectFileException
+derive Exceptional IncorrectFileException
+
+data PickleSerialization = pure native com.github.lands.PickleSerialization where
+  native loadWorld com.github.lands.PickleSerialization.loadWorld :: MutableIO File -> IO World throws IOException, IncorrectFileException
+
+data Dimension = pure native com.github.lands.Dimension
+data BiomeMatrix = pure native com.github.lands.BiomeMatrix
+data FloatMatrix = pure native com.github.lands.FloatMatrix
+data BooleanMatrix = pure native com.github.lands.BooleanMatrix
+
+data World = pure native com.github.lands.World where
+  pure native getBiome :: World -> BiomeMatrix
+  pure native getDimension :: World -> Dimension
+  pure native getElevation :: World -> FloatMatrix
+  pure native getHumidity :: World -> FloatMatrix
+  pure native getIrrigation :: World -> FloatMatrix
+  pure native getName :: World -> String
+  pure native getOcean :: World -> BooleanMatrix
+  pure native getPermeability :: World -> FloatMatrix
+  pure native getPrecipitations :: World -> FloatMatrix
+  pure native getSeaDepth :: World -> FloatMatrix
+  pure native getTemperature :: World -> FloatMatrix
+  pure native getWatermap :: World -> FloatMatrix
+
+-------------------------------------------------
+-- Basic
+-------------------------------------------------
+
+hasRepetitions :: (Eq a) => [a] -> Bool
+hasRepetitions xs = nub xs != xs
+
+assert false msg _ = error ("Assertion failed: " ++ msg)
+assert true  msg x = x
+
+-------------------------------------------------
+-- Model
+-------------------------------------------------
+
+type Id = Integer
+
+class WithId el where
+  getInGame :: Game -> Id -> el
+
+data Name = Name String | Unnamed
+derive Show Name
+
+data Position = Pos { x :: Int, y :: Int } 
+derive Show Position
+
+data Group = Group { id :: Id, name :: Name }
+derive Show Group
+
+data Game = Game { groups :: [Group] }
+derive Show Game
+
+-------------------------------------------------
+-- Data
+-------------------------------------------------
+
+l :: Language
+l = SamplesBasedLanguageFactory.getRandomLanguage ()
+
+n :: ST s String
+n = Language.name l
+
+gr1 = Group 1 (Name "Italians")
+gr2 = Group 2 (Name "French")
+gr3 = Group 3 (Name "German")
+gr4 = Group 4 (Name "Irish")
+
+ids g = map Group.id (Game.groups g)
+
+game :: [Group] -> Game
+game groups = assert (not (hasRepetitions (map Group.id groups))) "Duplicate id" $ Game groups
+
+g = game [gr1, gr2, gr3, gr4]
+
+main :: IO ()
+main = do samples <- ArrayList.new ()
+          res <- ArrayList.add samples "Nanana"
+          res <- ArrayList.add samples "Namana"
+          res <- ArrayList.add samples "Namama"
+          res <- ArrayList.add samples "Nana"
+          res <- ArrayList.add samples "Nama"
+          res <- ArrayList.add samples "Namamama"
+          language <- Language.new samples          
+          nameA <- Language.name language
+          nameB <- Language.name language
+          nameC <- Language.name language
+          putStrLn ("1) " ++ nameA)
+          putStrLn ("2) " ++ nameB)
+          putStrLn ("3) " ++ nameC)
