@@ -34,6 +34,9 @@ data World = pure native com.github.lands.World where
   pure native getTemperature :: World -> FloatMatrix
   pure native getWatermap :: World -> FloatMatrix
 
+instance Show World where
+  show w = "World " ++ (World.getName w)
+
 -------------------------------------------------
 -- Basic
 -------------------------------------------------
@@ -68,6 +71,7 @@ ids g = map Group.id (Game.groups g)
 
 game :: World -> [Group] -> Game
 game world groups = assert (not (hasRepetitions (map Group.id groups))) "Duplicate id" $ Game world groups
+derive Show Game
 
 -------------------------------------------------
 -- Data
@@ -78,6 +82,9 @@ game world groups = assert (not (hasRepetitions (map Group.id groups))) "Duplica
 -------------------------------------------------
 -- Actions
 -------------------------------------------------
+
+generateGame :: World -> Game
+generateGame world = game world []
 
 loadWorld :: String -> IO World
 loadWorld filepath = do let wf = File.new filepath :: STMutable a File  
@@ -93,6 +100,8 @@ main :: IO ()
 main = do putStrLn "Civs - Frege"
           putStrLn "--------------------------------------------------"
           w <- loadWorld "worlds/seed_77.world"
+          let g = generateGame w
+          putStrLn ("Final state of the game: " ++ (show g))
           putStrLn "\nDone."
 
 
