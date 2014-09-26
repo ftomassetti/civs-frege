@@ -1,15 +1,11 @@
 module civs.Language where
 
-data ArrayList e = native java.util.ArrayList where
-  native new :: () -> STMutable s (ArrayList e)              
-  native add :: Mutable s (ArrayList e) -> e -> ST s Bool
+import civs.BasicJava
 
 data Language = pure native com.github.langgen.Language where
   native new :: Mutable s (ArrayList String) -> ST s Language
   native addSample :: Language -> String -> ST s ()
   native name :: Language -> ST s String
-
-data Random = pure native java.util.Random
 
 data SamplesBasedLanguageFactory = pure native com.github.langgen.SamplesBasedLanguageFactory where
   pure native getRandomLanguage com.github.langgen.SamplesBasedLanguageFactory.getRandomLanguage :: Random -> Language

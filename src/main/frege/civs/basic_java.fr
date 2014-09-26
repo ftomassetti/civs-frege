@@ -1,0 +1,11 @@
+module civs.BasicJava where
+
+data ArrayList e = native java.util.ArrayList where
+  native new :: () -> STMutable s (ArrayList e)              
+  native add :: Mutable s (ArrayList e) -> e -> ST s Bool
+
+
+data Random = native java.util.Random where
+  native nextInt :: Mutable s Random -> Int -> ST s Int
+                  | Mutable s Random -> ST s Int
+

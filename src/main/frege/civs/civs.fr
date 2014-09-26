@@ -1,6 +1,7 @@
 module civs.Civs where
 
 import Data.List
+import civs.BasicJava
 
 -------------------------------------------------
 -- From Java
