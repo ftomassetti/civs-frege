@@ -6,12 +6,6 @@ import Data.List
 -- From Java
 -------------------------------------------------
 
-
-data Random = pure native java.util.Random
-
-data SamplesBasedLanguageFactory = pure native com.github.langgen.SamplesBasedLanguageFactory where
-  pure native getRandomLanguage com.github.langgen.SamplesBasedLanguageFactory.getRandomLanguage :: Random -> Language
-                                                                                             | () -> Language  
 data IncorrectFileException = pure native com.github.lands.IncorrectFileException
 derive Exceptional IncorrectFileException
 
