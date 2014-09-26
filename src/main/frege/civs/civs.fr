@@ -26,7 +26,10 @@ derive Exceptional IncorrectFileException
 data PickleSerialization = pure native com.github.lands.PickleSerialization where
   native loadWorld com.github.lands.PickleSerialization.loadWorld :: MutableIO File -> IO World throws IOException, IncorrectFileException
 
-data Dimension = pure native com.github.lands.Dimension
+data Dimension = pure native com.github.lands.Dimension where
+  pure native getHeight :: Dimension -> Int
+  pure native getWidth :: Dimension -> Int
+
 data BiomeMatrix = pure native com.github.lands.BiomeMatrix
 data FloatMatrix = pure native com.github.lands.FloatMatrix
 data BooleanMatrix = pure native com.github.lands.BooleanMatrix
@@ -73,7 +76,7 @@ derive Show Position
 data Group = Group { id :: Id, name :: Name }
 derive Show Group
 
-data Game = Game { groups :: [Group] }
+data Game = Game { world :: World, groups :: [Group] }
 derive Show Game
 
 -------------------------------------------------
@@ -99,17 +102,16 @@ game groups = assert (not (hasRepetitions (map Group.id groups))) "Duplicate id"
 g = game [gr1, gr2, gr3, gr4]
 
 main :: IO ()
-main = do samples <- ArrayList.new ()
-          res <- ArrayList.add samples "Nanana"
-          res <- ArrayList.add samples "Namana"
-          res <- ArrayList.add samples "Namama"
-          res <- ArrayList.add samples "Nana"
-          res <- ArrayList.add samples "Nama"
-          res <- ArrayList.add samples "Namamama"
-          language <- Language.new samples          
-          nameA <- Language.name language
-          nameB <- Language.name language
-          nameC <- Language.name language
-          putStrLn ("1) " ++ nameA)
-          putStrLn ("2) " ++ nameB)
-          putStrLn ("3) " ++ nameC)
+main = do putStrLn "Start"
+          let wf = File.new "worlds/seed_77.world" :: STMutable a File  
+          w <- wf >>= PickleSerialization.loadWorld
+          let d = World.getDimension w
+          let width  = Dimension.getWidth d
+          let height = Dimension.getHeight d
+          let name   = World.getName w
+          putStrLn $ "World: " ++ name
+          putStrLn $ "Width: "  ++ (show width)
+          putStrLn $ "Height: " ++ (show height)
+          putStrLn "Done"
+
+
