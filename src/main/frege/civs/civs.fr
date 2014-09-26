@@ -79,22 +79,20 @@ game world groups = assert (not (hasRepetitions (map Group.id groups))) "Duplica
 -- Actions
 -------------------------------------------------
 
-loadWorld :: IO World
-loadWorld = do let wf = File.new "worlds/seed_77.world" :: STMutable a File  
-               wf >>= PickleSerialization.loadWorld
+loadWorld :: String -> IO World
+loadWorld filepath = do let wf = File.new filepath :: STMutable a File  
+                        w <- wf >>= PickleSerialization.loadWorld
+                        let dim = World.getDimension w
+                        putStrLn $ "  Loaded world from " ++ filepath
+                        putStrLn $ "    name   : " ++ (World.getName w)
+                        putStrLn $ "    width  : " ++ (show $ Dimension.getWidth  dim)
+                        putStrLn $ "    height : " ++ (show $ Dimension.getHeight dim)
+                        return w
 
 main :: IO ()
 main = do putStrLn "Civs - Frege"
           putStrLn "--------------------------------------------------"
-          let wf = File.new "worlds/seed_77.world" :: STMutable a File  
-          w <- wf >>= PickleSerialization.loadWorld
-          let d = World.getDimension w
-          let width  = Dimension.getWidth d
-          let height = Dimension.getHeight d
-          let name   = World.getName w
-          putStrLn $ "World: " ++ name
-          putStrLn $ "Width: "  ++ (show width)
-          putStrLn $ "Height: " ++ (show height)
-          putStrLn "Done"
+          w <- loadWorld "worlds/seed_77.world"
+          putStrLn "\nDone."
 
 
