@@ -6,14 +6,6 @@ import Data.List
 -- From Java
 -------------------------------------------------
 
-data ArrayList e = native java.util.ArrayList where
-  native new :: () -> STMutable s (ArrayList e)              
-  native add :: Mutable s (ArrayList e) -> e -> ST s Bool
-
-data Language = pure native com.github.langgen.Language where
-  native new :: Mutable s (ArrayList String) -> ST s Language
-  native addSample :: Language -> String -> ST s ()
-  native name :: Language -> ST s String
 
 data Random = pure native java.util.Random
 
@@ -82,17 +74,6 @@ derive Show Game
 -------------------------------------------------
 -- Data
 -------------------------------------------------
-
-l :: Language
-l = SamplesBasedLanguageFactory.getRandomLanguage ()
-
-n :: ST s String
-n = Language.name l
-
-gr1 = Group 1 (Name "Italians")
-gr2 = Group 2 (Name "French")
-gr3 = Group 3 (Name "German")
-gr4 = Group 4 (Name "Irish")
 
 ids g = map Group.id (Game.groups g)
 
