@@ -1,7 +1,7 @@
 module civs.Civs where
 
 import Data.List
-import civs.BasicJava
+import civs.BasicJava(FRandom,Random)
 
 -------------------------------------------------
 -- From Java
@@ -66,13 +66,13 @@ derive Show Position
 data Group = Group { id :: Id, name :: Name }
 derive Show Group
 
-data Game = Game { world :: World, groups :: [Group] }
+data Game = Game { world :: World, groups :: [Group], random :: FRandom }
+derive Show Game
 
 ids g = map Group.id (Game.groups g)
 
-game :: World -> [Group] -> Game
-game world groups = assert (not (hasRepetitions (map Group.id groups))) "Duplicate id" $ Game world groups
-derive Show Game
+game :: World -> [Group] -> Long -> Game
+game world groups seed = assert (not (hasRepetitions (map Group.id groups))) "Duplicate id" $ Game world groups (FRandom seed)
 
 -------------------------------------------------
 -- Data
@@ -85,7 +85,7 @@ derive Show Game
 -------------------------------------------------
 
 generateGame :: World -> Game
-generateGame world = game world []
+generateGame world = game world [] 1
 
 loadWorld :: String -> IO World
 loadWorld filepath = do let wf = File.new filepath :: STMutable a File  
